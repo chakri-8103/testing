@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="abhyasApp">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abhyas - Student Individual Performance Search</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-hover: #3730a3;
+      --primary-light: #e0e7ff;
+      --secondary: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --bg-surface: #f8fafc;
+      --card-border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Top Navigation Navbar */
+    .navbar-custom {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      color: #fff;
+      padding: 1.1rem 0;
+      box-shadow: 0 4px 20px -2px rgba(30, 27, 75, 0.25);
+    }
+
+    .navbar-brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* Search Filter Card */
+    .search-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      margin-top: -1.75rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 0.65rem;
+      border: 1.5px solid #cbd5e1;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.925rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(67, 56, 202, 0.15);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 0.68rem 1.6rem;
+      border-radius: 0.65rem;
+      box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(67, 56, 202, 0.4);
+      color: white;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Student Banner */
+    .student-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+      border-left: 6px solid var(--secondary);
+    }
+
+    .student-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    /* Individual Module Tabs */
+    .nav-pills-custom {
+      gap: 0.5rem;
+      background: #e2e8f0;
+      padding: 0.35rem;
+      border-radius: 0.75rem;
+      display: inline-flex;
+      flex-wrap: wrap;
+    }
+
+    .nav-pills-custom .nav-link {
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 0.55rem;
+      padding: 0.55rem 1.35rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .nav-pills-custom .nav-link.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Module Cards */
+    .module-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .module-card:hover {
+      box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08);
+    }
+
+    .module-header {
+      padding: 1rem 1.35rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .module-header.crt {
+      background: linear-gradient(to right, #f8fafc, #eff6ff);
+      border-left: 5px solid #3b82f6;
+    }
+
+    .module-header.vani {
+      background: linear-gradient(to right, #f8fafc, #faf5ff);
+      border-left: 5px solid #a855f7;
+    }
+
+    .module-header.lab {
+      background: linear-gradient(to right, #f8fafc, #ecfdf5);
+      border-left: 5px solid #10b981;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      height: 100%;
+    }
+
+    .stat-box:hover {
+      background: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-top: 0.35rem;
+    }
+
+    /* Score Badges */
+    .badge-percent {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.4rem 0.75rem;
+      border-radius: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-percent-high {
+      background-color: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-percent-mid {
+      background-color: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-percent-low {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* LSRW Skill Cards */
+    .skill-card {
+      border-radius: 0.85rem;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      height: 100%;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .skill-card.listening {
+      border-top: 4px solid #3b82f6;
+    }
+
+    .skill-card.reading {
+      border-top: 4px solid #10b981;
+    }
+
+    .skill-card.speaking {
+      border-top: 4px solid #f59e0b;
+    }
+
+    .skill-card.writing {
+      border-top: 4px solid #e11d48;
+    }
+
+    .skill-icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .skill-icon-circle.listening {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .skill-icon-circle.reading {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .skill-icon-circle.speaking {
+      background: #fffbeb;
+      color: #d97706;
+    }
+
+    .skill-icon-circle.writing {
+      background: #ffe4e6;
+      color: #e11d48;
+    }
+
+    /* Progress bar */
+    .custom-progress {
+      height: 8px;
+      border-radius: 9999px;
+      background-color: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .progress-bar-custom {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.6s ease;
+    }
+
+    /* Clean modern tables */
+    .table-modern {
+      margin-bottom: 0;
+      font-size: 0.88rem;
+    }
+
+    .table-modern thead th {
+      background-color: #f8fafc;
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.75rem 1rem;
+      vertical-align: middle;
+    }
+
+    .table-modern tbody td {
+      padding: 0.85rem 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+
+    .table-modern tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-modern tbody tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    /* Status indicators */
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .status-pill.success {
+      background-color: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-pill.empty {
+      background-color: #f8fafc;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+    }
+
+    .status-pill.error {
+      background-color: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .status-pill.loading {
+      background-color: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .empty-state-icon {
+      font-size: 2.75rem;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Print styles */
+    @media print {
+
+      .navbar-custom,
+      .search-card,
+      .nav-pills-custom,
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background: #ffffff !important;
+      }
+
+      .module-card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+    }
+  </style>        
+</head>
+
+<body ng-controller="ReportController as vm">
+
+  <!-- TOP HEADER NAVBAR -->
+  <header class="navbar-custom">
+    <div class="container-fluid px-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <div class="bg-white text-primary rounded-3 p-2 d-flex align-items-center justify-content-center shadow-sm"
+            style="width: 44px; height: 44px;">
+            <i class="bi bi-speedometer2 fs-4"></i>
+          </div>
+          <div>
+            <div class="navbar-brand-title">Abhyas Student Individual Performance Search</div>
+            <div class="text-white-50 small">Individual Student Reports • CRT, Vani LSRW &amp; Lab Performance</div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-light btn-sm rounded-pill px-3 no-print" ng-click="vm.printReport()"
+            title="Print Dashboard">
+            <i class="bi bi-printer me-1"></i> Print / PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container-fluid px-4 py-4 flex-grow-1">
+
+    <!-- SEARCH & FILTER CARD -->
+    <div class="search-card p-3 p-md-4 mb-4">
+      <form ng-submit="vm.submitQuery()" name="reportForm" novalidate>
+        <div class="row g-3 align-items-end">
+
+          <!-- SUC Input -->
+          <div class="col-lg-4 col-md-5">
+            <label class="form-label d-flex justify-content-between">
+              <span><i class="bi bi-person-badge me-1"></i> Student SUC</span>
+              <span class="text-muted fw-normal" style="font-size: 0.7rem;">Required</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-hash"></i></span>
+              <input type="text" class="form-control border-start-0 code-font" placeholder="Enter SUC e.g. 2544640486"
+                ng-model="vm.query.suc" required autocomplete="off">
+            </div>
+          </div>
+
+          <!-- From Date -->
+          <div class="col-lg-3 col-md-3 col-sm-6">
+            <label class="form-label"><i class="bi bi-calendar-event me-1"></i> From Date</label>
+            <input type="date" class="form-control" ng-model="vm.query.fromDate" required>
+          </div>
+
+          <!-- To Date -->
+          <div class="col-lg-3 col-md-3 col-sm-6">
+            <label class="form-label"><i class="bi bi-calendar-check me-1"></i> To Date</label>
+            <input type="date" class="form-control" ng-model="vm.query.toDate" required>
+          </div>
+
+          <!-- Submit Action Button -->
+          <div class="col-lg-2 col-md-12">
+            <button type="submit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2"
+              ng-disabled="reportForm.$invalid || vm.isLoading">
+              <span ng-if="!vm.isLoading"><i class="bi bi-search"></i> Submit</span>
+              <span ng-if="vm.isLoading" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
+              <span ng-if="vm.isLoading">Searching...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Date Range Quick Presets -->
+        <div class="mt-3 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="text-muted small fw-semibold" style="font-size: 0.75rem;">Date Presets:</span>
+            <button type="button" class="btn btn-light btn-sm py-0 px-2 rounded-pill small"
+              ng-click="vm.setDatePreset('yesterdayToday')">Yesterday &amp; Today</button>
+              <button type="button" class="btn btn-light btn-sm py-0 px-2 rounded-pill small"
+              ng-click="vm.setDatePreset('thisMonth')">Current Month</button>
+              <button type="button" class="btn btn-light btn-sm py-0 px-2 rounded-pill small"
+              ng-click="vm.setDatePreset('last30')">Last 30 Days</button>
+              <button type="button" class="btn btn-light btn-sm py-0 px-2 rounded-pill small"
+                ng-click="vm.setDatePreset('academic')">2025–2026</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- INITIAL STATE (Before any search is submitted) -->
+    <div ng-if="!vm.hasSearched && !vm.isLoading" class="module-card p-5 text-center">
+      <div class="py-4">
+        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex p-4 mb-3">
+          <i class="bi bi-bar-chart-line-fill display-4"></i>
+        </div>
+        <h3 class="fw-bold text-slate-800">Student Individual Performance Search</h3>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+          Enter the Student Unique Code (SUC), select the date range, and click <strong>Submit</strong> to fetch and
+          view individual student reports across CRT, Lab, and Vani modules.
+        </p>
+        <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+          <div class="p-3 bg-light rounded-3 text-start border" style="width: 250px;">
+            <div class="fw-bold text-primary mb-1"><i class="bi bi-journal-text me-1"></i> Abhyas CRT (3)</div>
+            <div class="small text-muted">• Grand Test</div>
+            <div class="small text-muted">• Practice Test</div>
+            <div class="small text-muted">• Deepdive</div>
+          </div>
+          <div class="p-3 bg-light rounded-3 text-start border" style="width: 250px;">
+            <div class="fw-bold text-success mb-1"><i class="bi bi-laptop me-1"></i> Abhyas Lab (2)</div>
+            <div class="small text-muted">• Coding Challenges</div>
+            <div class="small text-muted">• Self-Practice Section</div>
+          </div>
+          <div class="p-3 bg-light rounded-3 text-start border" style="width: 250px;">
+            <div class="fw-bold mb-1" style="color: #7c3aed;"><i class="bi bi-headphones me-1"></i> Abhyas Vani (4)
+            </div>
+            <div class="small text-muted">• Listening Assessment</div>
+            <div class="small text-muted">• Reading Assessment</div>
+            <div class="small text-muted">• Speaking Assessment</div>
+            <div class="small text-muted">• Writing Assessment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOADING STATE PROGRESS INDICATOR -->
+    <div ng-if="vm.isLoading" class="module-card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="fw-bold text-primary d-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+          <span>Querying Abhyas Service APIs... ({{vm.completedRequests}}/{{vm.totalRequests}} complete)</span>
+        </div>
+        <span class="small text-muted">{{ (vm.completedRequests / vm.totalRequests * 100) | number:0 }}%</span>
+      </div>
+      <div class="progress" style="height: 8px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
+          ng-style="{'width': (vm.completedRequests / vm.totalRequests * 100) + '%'}"></div>
+      </div>
+      <div class="row g-2 mt-3 small text-muted">
+        <div class="col-md-4 col-6" ng-repeat="status in vm.apiStatuses">
+          <i class="bi" ng-class="{
+            'bi-check-circle-fill text-success': status.state === 'done',
+            'bi-x-circle-fill text-danger': status.state === 'error',
+            'bi-arrow-repeat text-primary spinner-border-sm': status.state === 'loading',
+            'bi-clock text-muted': status.state === 'pending'
+          }"></i>
+          <span class="ms-1">{{ status.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- CASE 1: NO DATA FOUND FOR THIS SUC ACROSS ALL MODULES           -->
+    <!-- =============================================================== -->
+    <div ng-if="vm.hasSearched && !vm.isLoading && !vm.hasAnyData" class="module-card p-5 text-center my-4">
+      <div class="py-4">
+        <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 border">
+          <i class="bi bi-folder-x display-4 text-muted"></i>
+        </div>
+        <h4 class="fw-bold text-slate-800">No Data Found</h4>
+        <p class="text-muted mb-0 mx-auto" style="max-width: 550px;">
+          No records found for SUC <strong class="code-font text-dark">{{ vm.query.suc }}</strong> between <strong>{{
+            vm.formattedFromDate }}</strong> and <strong>{{ vm.formattedToDate }}</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- CASE 2: RECORDS FOUND - SHOW STUDENT BANNER & INDIVIDUAL TABS   -->
+    <!-- =============================================================== -->
+    <div ng-if="vm.hasSearched && !vm.isLoading && vm.hasAnyData">
+
+      <!-- STUDENT PROFILE & META BANNER -->
+      <div class="student-banner mb-4">
+        <div class="row align-items-center g-3">
+          <div class="col-md-auto text-center">
+            <div class="student-avatar mx-auto">
+              {{ (vm.studentSummary.name || 'S') | limitTo:1 | uppercase }}
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+              <h4 class="fw-bold mb-0 text-white">
+                {{ vm.studentSummary.name || 'Student ID: ' + vm.query.suc }}
+              </h4>
+              <span class="badge bg-primary px-3 py-1 rounded-pill code-font">
+                SUC: {{ vm.query.suc }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-light opacity-75 small flex-wrap">
+              <span ng-if="vm.studentSummary.campus">
+                <i class="bi bi-geo-alt-fill text-warning me-1"></i> Campus: <strong>{{ vm.studentSummary.campus
+                  }}</strong>
+              </span>
+              <span ng-if="vm.studentSummary.section">
+                <i class="bi bi-grid-3x3-gap-fill text-info me-1"></i> Section: <strong>{{ vm.studentSummary.section
+                  }}</strong>
+              </span>
+              <span>
+                <i class="bi bi-calendar3 text-secondary me-1"></i> Range: <strong>{{ vm.formattedFromDate }}</strong>
+                to <strong>{{ vm.formattedToDate }}</strong>
+              </span>
+            </div>
+          </div>
+          <div class="col-md-auto text-md-end text-start border-start-md ps-md-4">
+            <div class="d-flex gap-3 justify-content-md-end">
+              <div class="text-center">
+                <div class="fs-4 fw-bold text-white">{{ vm.totalAggregateQuestions }}</div>
+                <div class="small text-white-50 text-uppercase" style="font-size: 0.65rem;">Total Questions</div>
+              </div>
+              <div class="text-center border-start ps-3 border-secondary">
+                <div class="fs-4 fw-bold text-success">{{ vm.totalAggregateRight }}</div>
+                <div class="small text-white-50 text-uppercase" style="font-size: 0.65rem;">Total Correct</div>
+              </div>
+              <div class="text-center border-start ps-3 border-secondary">
+                <div class="fs-4 fw-bold text-warning">{{ vm.totalAggregateAccuracy }}%</div>
+                <div class="small text-white-50 text-uppercase" style="font-size: 0.65rem;">Overall Accuracy</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INDIVIDUAL MODULE TABS (ABHYAS CRT, ABHYAS LAB, ABHYAS VANI) -->
+      <div class="mb-4">
+        <ul class="nav nav-pills nav-pills-custom">
+          <li class="nav-item">
+            <button class="nav-link" ng-class="{'active': vm.activeTab === 'crt'}" ng-click="vm.activeTab = 'crt'">
+              <i class="bi bi-journal-check text-primary"></i> Abhyas CRT
+              <span class="badge bg-primary-subtle text-primary rounded-pill small ms-1" ng-if="vm.crtTotalCount > 0">{{
+                vm.crtTotalCount }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" ng-class="{'active': vm.activeTab === 'lab'}" ng-click="vm.activeTab = 'lab'">
+              <i class="bi bi-laptop text-success"></i> Abhyas Lab
+              <span class="badge bg-success-subtle text-success rounded-pill small ms-1" ng-if="vm.labTotalCount > 0">{{
+                vm.labTotalCount }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" ng-class="{'active': vm.activeTab === 'vani'}" ng-click="vm.activeTab = 'vani'">
+              <i class="bi bi-headphones" style="color: #8b5cf6;"></i> Abhyas Vani
+              <span class="badge rounded-pill small ms-1" style="background: #ede9fe; color: #7c3aed;"
+                ng-if="vm.vaniTotalCount > 0">{{ vm.vaniTotalCount }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- =============================================================== -->
+       
+      <!-- =============================================================== -->
+      <section id="section-crt" ng-show="vm.activeTab === 'crt'" class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h4 class="fw-bold mb-0 d-flex align-items-center gap-2 text-slate-800">
+            <span class="badge bg-primary rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+              style="width: 32px; height: 32px;">
+              <i class="bi bi-journal-text"></i>
+            </span>
+            Abhyas CRT Reports
+            <span
+              class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-6 fw-semibold">
+              3 Subdivisions
+            </span>
+          </h4>
+        </div>
+
+        <!-- When CRT has 0 records -->
+        <div ng-if="vm.crtTotalCount === 0" class="module-card p-5 text-center">
+          <i class="bi bi-folder-x fs-1 text-muted mb-2 d-block"></i>
+          <h5 class="fw-bold text-slate-700">No Data Found for Abhyas CRT</h5>
+          <p class="text-muted small mb-0">No practice test, grand test, or deepdive records found for this student in
+            the chosen date range.</p>
+        </div>
+
+        <!-- When CRT has records -->
+        <div class="row g-4" ng-if="vm.crtTotalCount > 0">
+
+          <!-- CRT 1: Grand Test -->
+          <div class="col-lg-4 col-md-6">
+            <div class="module-card h-100 d-flex flex-column">
+              <div class="module-header crt">
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-800">1. Grand Test</h6>
+                </div>
+                <span class="status-pill" ng-class="vm.getStatusClass(vm.crtGrand)">
+                  {{ vm.getStatusLabel(vm.crtGrand) }}
+                </span>
+              </div>
+
+              <div class="p-3 flex-grow-1">
+                <div ng-if="vm.crtGrand.data && vm.crtGrand.data.length > 0">
+                  <div ng-repeat="item in vm.crtGrand.data" class="mb-3">
+                    <div class="row g-2 mb-3">
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-primary">{{ item.Q || 0 }}</div>
+                          <div class="stat-label">Questions</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-success">{{ item.R || 0 }}</div>
+                          <div class="stat-label">Correct</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value" ng-class="vm.getScoreColor(item.percent)">{{ item.percent || 0 }}%
+                          </div>
+                          <div class="stat-label">Score</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="p-2 bg-light rounded-3 small mb-3">
+                      <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted"><i class="bi bi-stopwatch me-1"></i> Time:</span>
+                        <span class="fw-bold">{{ vm.formatTimeToHMS(item) }}</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 mb-3">
+                      <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Accuracy Performance</span>
+                        <span>{{ item.percent || 0 }}%</span>
+                      </div>
+                      <div class="custom-progress">
+                        <div class="progress-bar-custom"
+                          ng-style="{'width': (item.percent || 0) + '%', 'background-color': vm.getProgressColor(item.percent)}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Subject-Wise Breakdown (Auto Displayed) -->
+                    <div class="mt-3 pt-3 border-top" ng-if="item.subjectWise && item.subjectWise.length > 0">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-slate-700">
+                          <i class="bi bi-diagram-3-fill me-1 text-primary"></i> Subject-Wise Analysis
+                        </span>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">
+                          {{ item.subjectWise.length }} {{ item.subjectWise.length === 1 ? 'Subject' : 'Subjects' }}
+                        </span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-modern align-middle mb-0" style="font-size: 0.78rem;">
+                          <thead>
+                            <tr class="text-muted">
+                              <th>Subject</th>
+                              <th class="text-center" title="Questions">Q</th>
+                              <th class="text-center text-success" title="Correct">R</th>
+                              <th class="text-center text-danger" title="Wrong">W</th>
+                              <th class="text-center text-secondary" title="Left">L</th>
+                              <th class="text-end" title="Percentage">Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="sub in item.subjectWise">
+                              <td class="fw-semibold text-truncate" style="max-width: 105px;" title="{{ sub.subject }}">
+                                {{ sub.subject }}
+                              </td>
+                              <td class="text-center text-muted">{{ sub.Q || 0 }}</td>
+                              <td class="text-center text-success fw-bold">{{ sub.R || 0 }}</td>
+                              <td class="text-center text-danger">{{ sub.W || 0 }}</td>
+                              <td class="text-center text-secondary">{{ sub.L || 0 }}</td>
+                              <td class="text-end">
+                                <span class="badge" ng-class="vm.getScoreBadgeClass(sub.percent)">
+                                  {{ sub.percent || 0 }}%
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div ng-if="!vm.crtGrand.data || vm.crtGrand.data.length === 0" class="empty-state py-4">
+                  <i class="bi bi-inbox empty-state-icon"></i>
+                  <div class="fw-semibold">No Grand Test Records</div>
+                  <div class="small text-muted">No grand tests completed in this window.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CRT 2: Practice Test -->
+          <div class="col-lg-4 col-md-6">
+            <div class="module-card h-100 d-flex flex-column">
+              <div class="module-header crt">
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-800">2. Practice Test</h6>
+                </div>
+                <span class="status-pill" ng-class="vm.getStatusClass(vm.crtPractice)">
+                  {{ vm.getStatusLabel(vm.crtPractice) }}
+                </span>
+              </div>
+
+              <div class="p-3 flex-grow-1">
+                <div ng-if="vm.crtPractice.data && vm.crtPractice.data.length > 0">
+                  <div ng-repeat="item in vm.crtPractice.data" class="mb-3">
+                    <div class="row g-2 mb-3">
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-primary">{{ item.Q || 0 }}</div>
+                          <div class="stat-label">Questions</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-success">{{ item.R || 0 }}</div>
+                          <div class="stat-label">Correct</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value" ng-class="vm.getScoreColor(item.percent)">{{ item.percent || 0 }}%
+                          </div>
+                          <div class="stat-label">Score</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="p-2 bg-light rounded-3 small mb-3">
+                      <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted"><i class="bi bi-stopwatch me-1"></i> Time Spent:</span>
+                        <span class="fw-bold">{{ item.time || (item.timeSeconds ? (item.timeSeconds + 's') : '00:00:00')
+                          }}</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 mb-3">
+                      <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Accuracy Performance</span>
+                        <span>{{ item.percent || 0 }}%</span>
+                      </div>
+                      <div class="custom-progress">
+                        <div class="progress-bar-custom"
+                          ng-style="{'width': (item.percent || 0) + '%', 'background-color': vm.getProgressColor(item.percent)}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Subject-Wise Breakdown (Auto Displayed) -->
+                    <div class="mt-3 pt-3 border-top" ng-if="item.subjectWise && item.subjectWise.length > 0">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-slate-700">
+                          <i class="bi bi-diagram-3-fill me-1 text-primary"></i> Subject-Wise Analysis
+                        </span>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">
+                          {{ item.subjectWise.length }} {{ item.subjectWise.length === 1 ? 'Subject' : 'Subjects' }}
+                        </span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-modern align-middle mb-0" style="font-size: 0.78rem;">
+                          <thead>
+                            <tr class="text-muted">
+                              <th>Subject</th>
+                              <th class="text-center" title="Questions">Q</th>
+                              <th class="text-center text-success" title="Correct">R</th>
+                              <th class="text-center text-danger" title="Wrong">W</th>
+                              <th class="text-center text-secondary" title="Left">L</th>
+                              <th class="text-end" title="Percentage">Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="sub in item.subjectWise">
+                              <td class="fw-semibold text-truncate" style="max-width: 105px;" title="{{ sub.subject }}">
+                                {{ sub.subject }}
+                              </td>
+                              <td class="text-center text-muted">{{ sub.Q || 0 }}</td>
+                              <td class="text-center text-success fw-bold">{{ sub.R || 0 }}</td>
+                              <td class="text-center text-danger">{{ sub.W || 0 }}</td>
+                              <td class="text-center text-secondary">{{ sub.L || 0 }}</td>
+                              <td class="text-end">
+                                <span class="badge" ng-class="vm.getScoreBadgeClass(sub.percent)">
+                                  {{ sub.percent || 0 }}%
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div ng-if="!vm.crtPractice.data || vm.crtPractice.data.length === 0" class="empty-state py-4">
+                  <i class="bi bi-inbox empty-state-icon"></i>
+                  <div class="fw-semibold">No Practice Test Records</div>
+                  <div class="small text-muted">No practice tests completed in this window.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CRT 3: Deepdive -->
+          <div class="col-lg-4 col-md-6">
+            <div class="module-card h-100 d-flex flex-column">
+              <div class="module-header crt">
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-800">3. Deepdive</h6>
+                </div>
+                <span class="status-pill" ng-class="vm.getStatusClass(vm.crtDeepdive)">
+                  {{ vm.getStatusLabel(vm.crtDeepdive) }}
+                </span>
+              </div>
+
+              <div class="p-3 flex-grow-1">
+                <div ng-if="vm.crtDeepdive.data && vm.crtDeepdive.data.length > 0">
+                  <div ng-repeat="item in vm.crtDeepdive.data" class="mb-3">
+                    <div class="row g-2 mb-3">
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-primary">{{ item.Q || 0 }}</div>
+                          <div class="stat-label">Questions</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value text-success">{{ item.R || 0 }}</div>
+                          <div class="stat-label">Correct</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="stat-box">
+                          <div class="stat-value" ng-class="vm.getScoreColor(item.percent)">{{ item.percent || 0 }}%
+                          </div>
+                          <div class="stat-label">Score</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 mb-3">
+                      <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Accuracy Performance</span>
+                        <span>{{ item.percent || 0 }}%</span>
+                      </div>
+                      <div class="custom-progress">
+                        <div class="progress-bar-custom"
+                          ng-style="{'width': (item.percent || 0) + '%', 'background-color': vm.getProgressColor(item.percent)}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Subject-Wise Breakdown (Auto Displayed) -->
+                    <div class="mt-3 pt-3 border-top" ng-if="item.subjectWise && item.subjectWise.length > 0">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-slate-700">
+                          <i class="bi bi-diagram-3-fill me-1 text-primary"></i> Subject-Wise Analysis
+                        </span>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">
+                          {{ item.subjectWise.length }} {{ item.subjectWise.length === 1 ? 'Subject' : 'Subjects' }}
+                        </span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-modern align-middle mb-0" style="font-size: 0.78rem;">
+                          <thead>
+                            <tr class="text-muted">
+                              <th>Subject</th>
+                              <th class="text-center" title="Questions">Q</th>
+                              <th class="text-center text-success" title="Correct">R</th>
+                              <th class="text-center text-danger" title="Wrong">W</th>
+                              <th class="text-center text-secondary" title="Left">L</th>
+                              <th class="text-end" title="Percentage">Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="sub in item.subjectWise">
+                              <td class="fw-semibold text-truncate" style="max-width: 105px;" title="{{ sub.subject }}">
+                                {{ sub.subject }}
+                              </td>
+                              <td class="text-center text-muted">{{ sub.Q || 0 }}</td>
+                              <td class="text-center text-success fw-bold">{{ sub.R || 0 }}</td>
+                              <td class="text-center text-danger">{{ sub.W || 0 }}</td>
+                              <td class="text-center text-secondary">{{ sub.L || 0 }}</td>
+                              <td class="text-end">
+                                <span class="badge" ng-class="vm.getScoreBadgeClass(sub.percent)">
+                                  {{ sub.percent || 0 }}%
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div ng-if="!vm.crtDeepdive.data || vm.crtDeepdive.data.length === 0" class="empty-state py-4">
+                  <i class="bi bi-inbox empty-state-icon"></i>
+                  <div class="fw-semibold">No Deepdive Records</div>
+                  <div class="small text-muted">No deepdive test records found for this period.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 2: ABHYAS LAB (2 SUBDIVISIONS)                              -->
+      <!-- =============================================================== -->
+      <section id="section-lab" ng-show="vm.activeTab === 'lab'" class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h4 class="fw-bold mb-0 d-flex align-items-center gap-2 text-slate-800">
+            <span class="badge bg-success rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+              style="width: 32px; height: 32px;">
+              <i class="bi bi-laptop"></i>
+            </span>
+            Abhyas Lab Reports
+            <span
+              class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-6 fw-semibold">
+              2 Subdivisions
+            </span>
+          </h4>
+        </div>
+
+        <!-- When Lab has 0 records -->
+        <div ng-if="vm.labTotalCount === 0" class="module-card p-5 text-center">
+          <i class="bi bi-folder-x fs-1 text-muted mb-2 d-block"></i>
+          <h5 class="fw-bold text-slate-700">No Data Found for Abhyas Lab</h5>
+          <p class="text-muted small mb-0">No self-practice or coding challenge evaluations found for this student in
+            the chosen date range.</p>
+        </div>
+
+        <!-- When Lab has records -->
+        <div class="row g-4" ng-if="vm.labTotalCount > 0">
+
+          <!-- Lab 1: Coding Challenges -->
+          <div class="col-lg-6">
+            <div class="module-card h-100 d-flex flex-column">
+              <div class="module-header lab">
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-800">1. Coding Challenges</h6>
+                </div>
+                <span class="status-pill" ng-class="vm.getStatusClass(vm.labCoding)">
+                  {{ vm.getStatusLabel(vm.labCoding) }}
+                </span>
+              </div>
+
+              <div class="p-3 flex-grow-1">
+                <div ng-if="vm.labCoding.data && vm.labCoding.data.length > 0">
+                  <div ng-repeat="item in vm.labCoding.data" class="mb-3">
+
+                    <div class="row g-2 mb-3">
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-primary">{{ item.Q || 0 }}</div>
+                          <div class="stat-label">Challenges</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-success">{{ item.R || 0 }}</div>
+                          <div class="stat-label">Solved (R)</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-danger">{{ item.W || 0 }}</div>
+                          <div class="stat-label">Wrong (W)</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value" ng-class="vm.getScoreColor(item.percent)">{{ item.percent || 0 }}%
+                          </div>
+                          <div class="stat-label">Score</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="p-2 bg-light rounded-3 small mb-3">
+                      <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted"><i class="bi bi-clock me-1"></i> Time:</span>
+                        <span class="fw-bold">{{ item.time || vm.formatTimeToHMS(item) }}</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 mb-3">
+                      <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Coding Accuracy Performance</span>
+                        <span>{{ item.percent || 0 }}%</span>
+                      </div>
+                      <div class="custom-progress">
+                        <div class="progress-bar-custom"
+                          ng-style="{'width': (item.percent || 0) + '%', 'background-color': vm.getProgressColor(item.percent)}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Language-Wise Breakdown (Auto Displayed) -->
+                    <div class="mt-3 pt-3 border-top" ng-if="item.languageWise && item.languageWise.length > 0">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-slate-700">
+                          <i class="bi bi-code-slash me-1 text-success"></i> Language-Wise Analysis
+                        </span>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">
+                          {{ item.languageWise.length }} {{ item.languageWise.length === 1 ? 'Language' : 'Languages' }}
+                        </span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-modern align-middle mb-0" style="font-size: 0.8rem;">
+                          <thead>
+                            <tr class="text-muted">
+                              <th>Language</th>
+                              <th class="text-center" title="Challenges">Q</th>
+                              <th class="text-center text-success" title="Solved / Right">R</th>
+                              <th class="text-center text-danger" title="Wrong">W</th>
+                              <th class="text-center text-secondary" title="Left">L</th>
+                              <th class="text-end" title="Percentage">Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="lang in item.languageWise">
+                              <td class="fw-semibold">
+                                <span class="badge bg-light text-dark border code-font">{{ lang.language }}</span>
+                              </td>
+                              <td class="text-center text-muted">{{ lang.Q || 0 }}</td>
+                              <td class="text-center text-success fw-bold">{{ lang.R || 0 }}</td>
+                              <td class="text-center text-danger">{{ lang.W || 0 }}</td>
+                              <td class="text-center text-secondary">{{ lang.L || 0 }}</td>
+                              <td class="text-end">
+                                <span class="badge" ng-class="vm.getScoreBadgeClass(lang.percent)">
+                                  {{ lang.percent || 0 }}%
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div ng-if="!vm.labCoding.data || vm.labCoding.data.length === 0" class="empty-state py-4">
+                  <i class="bi bi-terminal empty-state-icon"></i>
+                  <div class="fw-semibold">No Coding Challenge Records</div>
+                  <div class="small text-muted">No coding challenge evaluations found for this period.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lab 2: Self-Practice -->
+          <div class="col-lg-6">
+            <div class="module-card h-100 d-flex flex-column">
+              <div class="module-header lab">
+                <div>
+                  <h6 class="fw-bold mb-0 text-slate-800">2. Self-Practice</h6>
+                </div>
+                <span class="status-pill" ng-class="vm.getStatusClass(vm.labPractice)">
+                  {{ vm.getStatusLabel(vm.labPractice) }}
+                </span>
+              </div>
+
+              <div class="p-3 flex-grow-1">
+                <div ng-if="vm.labPractice.data && vm.labPractice.data.length > 0">
+                  <div ng-repeat="item in vm.labPractice.data" class="mb-3">
+
+                    <div class="row g-2 mb-3">
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-primary">{{ item.Q || 0 }}</div>
+                          <div class="stat-label">Questions</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-success">{{ item.R || 0 }}</div>
+                          <div class="stat-label">Solved (R)</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value text-danger">{{ item.W || 0 }}</div>
+                          <div class="stat-label">Wrong (W)</div>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-box">
+                          <div class="stat-value" ng-class="vm.getScoreColor(item.percent)">{{ item.percent || 0 }}%
+                          </div>
+                          <div class="stat-label">Score</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="p-2 bg-light rounded-3 small mb-3">
+                      <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted"><i class="bi bi-clock me-1"></i> Total Time:</span>
+                        <span class="fw-bold">{{ item.time || vm.formatTimeToHMS(item) }}</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 mb-3">
+                      <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Self-Practice Completion &amp; Accuracy</span>
+                        <span>{{ item.percent || 0 }}%</span>
+                      </div>
+                      <div class="custom-progress">
+                        <div class="progress-bar-custom"
+                          ng-style="{'width': (item.percent || 0) + '%', 'background-color': vm.getProgressColor(item.percent)}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Language-Wise Breakdown (Auto Displayed) -->
+                    <div class="mt-3 pt-3 border-top" ng-if="item.languageWise && item.languageWise.length > 0">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-slate-700">
+                          <i class="bi bi-code-slash me-1 text-success"></i> Language-Wise Analysis
+                        </span>
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">
+                          {{ item.languageWise.length }} {{ item.languageWise.length === 1 ? 'Language' : 'Languages' }}
+                        </span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-modern align-middle mb-0" style="font-size: 0.8rem;">
+                          <thead>
+                            <tr class="text-muted">
+                              <th>Language</th>
+                              <th class="text-center" title="Questions">Q</th>
+                              <th class="text-center text-success" title="Solved / Right">R</th>
+                              <th class="text-center text-danger" title="Wrong">W</th>
+                              <th class="text-center text-secondary" title="Left">L</th>
+                              <th class="text-end" title="Percentage">Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="lang in item.languageWise">
+                              <td class="fw-semibold">
+                                <span class="badge bg-light text-dark border code-font">{{ lang.language }}</span>
+                              </td>
+                              <td class="text-center text-muted">{{ lang.Q || 0 }}</td>
+                              <td class="text-center text-success fw-bold">{{ lang.R || 0 }}</td>
+                              <td class="text-center text-danger">{{ lang.W || 0 }}</td>
+                              <td class="text-center text-secondary">{{ lang.L || 0 }}</td>
+                              <td class="text-end">
+                                <span class="badge" ng-class="vm.getScoreBadgeClass(lang.percent)">
+                                  {{ lang.percent || 0 }}%
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div ng-if="!vm.labPractice.data || vm.labPractice.data.length === 0" class="empty-state py-4">
+                  <i class="bi bi-code-square empty-state-icon"></i>
+                  <div class="fw-semibold">No Self-Practice Records</div>
+                  <div class="small text-muted">No lab practice recorded for this date range.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 3: ABHYAS VANI (LSRW - LISTENING, SPEAKING, READING, WRITING) -->
+      <!-- =============================================================== -->
+      <section id="section-vani" ng-show="vm.activeTab === 'vani'" class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h4 class="fw-bold mb-0 d-flex align-items-center gap-2 text-slate-800">
+            <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center text-white"
+              style="background-color: #8b5cf6; width: 32px; height: 32px;">
+              <i class="bi bi-headphones"></i>
+            </span>
+            Abhyas Vani Reports
+           <span
+              class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-6 fw-semibold">
+              4 Subdivisions
+            </span>
+          </h4>
+        </div>
+
+        <!-- When Vani has 0 records -->
+        <div ng-if="vm.vaniTotalCount === 0" class="module-card p-5 text-center">
+          <i class="bi bi-folder-x fs-1 text-muted mb-2 d-block"></i>
+          <h5 class="fw-bold text-slate-700">No Data Found for Abhyas Vani</h5>
+          <p class="text-muted small mb-0">No listening, reading, speaking, or writing assessment records found for this student.
+          </p>
+        </div>
+
+        <!-- When Vani has records -->
+        <div class="module-card" ng-if="vm.vaniTotalCount > 0">
+          <div class="module-header vani">
+            <div class="d-flex align-items-center gap-2">
+              <!-- <h6 class="fw-bold mb-0 text-slate-800">Unified LSRW Assessment Breakdown</h6> -->
+              <!-- <span class="badge bg-light text-dark border">{{ vm.vaniTotalCount }} Skills Analyzed</span> -->
+            </div>
+            <span class="status-pill" ng-class="vm.getVaniStatusClass()">
+              {{ vm.vaniTotalCount }} Record(s)
+            </span>
+          </div>
+
+          <div class="p-3 p-md-4">
+
+            <!-- LSRW Skill Cards: Listening, Reading, Speaking + Writing -->
+            <div class="row g-4 mb-4">
+
+              <!-- Listening, Reading, Speaking Cards -->
+              <div class="col-xl-3 col-md-6" ng-repeat="skill in vm.vaniSkills">
+                <div class="skill-card" ng-class="skill.skill.toLowerCase()">
+
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="skill-icon-circle" ng-class="skill.skill.toLowerCase()">
+                        <i class="bi" ng-class="{
+                          'bi-headphones': skill.skill.toLowerCase() === 'listening',
+                          'bi-book-half': skill.skill.toLowerCase() === 'reading',
+                          'bi-mic-fill': skill.skill.toLowerCase() === 'speaking'
+                        }"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold mb-0 text-slate-800">{{ skill.skill }}</h5>
+                      </div>
+                    </div>
+                    <span class="badge-percent" ng-class="vm.getAccuracyBadgeClass(skill.accuracy)">
+                      {{ skill.accuracy || 0 }}%
+                    </span>
+                  </div>
+
+                  <!-- Metrics Grid -->
+                  <div class="row g-2 text-center mb-3">
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-dark">{{ skill.totalques || 0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Total Q</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-success">{{ skill.totalright || 0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Correct</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-danger">{{ skill.totalwrong || 0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Wrong</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Points and Time -->
+                  <div class="small p-2 bg-light rounded-2 mb-3">
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                      <span class="text-muted"><i class="bi bi-trophy me-1 text-warning"></i> Earned Points:</span>
+                      <span class="fw-bold text-dark">{{ skill.total_earned_points || 0 }} <span
+                          class="text-muted fw-normal">/ {{ skill.totalpoints || 0 }}</span></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                      <span class="text-muted"><i class="bi bi-clock-history me-1 text-info"></i> Time Spent:</span>
+                      <span class="fw-bold">{{ skill.totaltimespent_hms || '00:00:00' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1" ng-if="skill.timeLimit">
+                      <span class="text-muted"><i class="bi bi-hourglass-split me-1 text-secondary"></i> Time
+                        Limit:</span>
+                      <span class="fw-semibold">{{ skill.timeLimit }}s</span>
+                    </div>
+                  </div>
+
+                  <!-- Accuracy Progress Bar -->
+                  <div>
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                      <span>Skill Accuracy</span>
+                      <span class="fw-bold">{{ skill.accuracy || 0 }}%</span>
+                    </div>
+                    <div class="custom-progress">
+                      <div class="progress-bar-custom"
+                        ng-style="{'width': (skill.accuracy || 0) + '%', 'background-color': vm.getProgressColor(skill.accuracy)}">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Writing Skill Card (from studentresult API) -->
+              <div class="col-xl-3 col-md-6" ng-repeat="item in vm.vaniWriting.data">
+                <div class="skill-card writing">
+
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="skill-icon-circle writing">
+                        <i class="bi bi-pencil-square"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold mb-0 text-slate-800">Writing</h5>
+                      </div>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-bold small">
+                      {{ item.records }} Records
+                    </span>
+                  </div>
+
+                  <!-- Metrics Grid -->
+                  <div class="row g-2 text-center mb-3">
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-dark">{{ item.records || 0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Records</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-primary">{{ (item.total_score || 0) | number:0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Total Score</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="p-2 bg-light rounded-2">
+                        <div class="fw-bold fs-6 text-danger">{{ (item.overallmistake_score || 0) | number:0 }}</div>
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase;">Mistakes</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Points and Mistakes Breakdown -->
+                  <div class="small p-2 bg-light rounded-2 mb-3">
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                      <span class="text-muted"><i class="bi bi-award me-1 text-primary"></i> Total Score:</span>
+                      <span class="fw-bold text-dark">{{ item.total_score | number:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                      <span class="text-muted"><i class="bi bi-spellcheck me-1 text-warning"></i> Spelling Mistakes:</span>
+                      <span class="fw-bold text-warning">{{ item.spellingmistake_score | number:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                      <span class="text-muted"><i class="bi bi-exclamation-triangle me-1 text-danger"></i> Overall Mistakes:</span>
+                      <span class="fw-bold text-danger">{{ item.overallmistake_score | number:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1">
+                      <span class="text-muted"><i class="bi bi-calculator me-1 text-secondary"></i> Avg Score/Test:</span>
+                      <span class="fw-semibold">{{ (item.total_score / (item.records || 1)) | number:2 }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Writing Quality Progress / Rating -->
+                  <div>
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                      <span>Writing Performance</span>
+                      <span class="fw-bold text-danger">{{ (item.records > 0 ? (item.total_score / item.records) : 0) | number:1 }} pts/record</span>
+                    </div>
+                    <div class="custom-progress">
+                      <div class="progress-bar-custom bg-danger" style="width: 100%;"></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AngularJS 1.8.2 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+  <!-- ANGULARJS APPLICATION CODE -->
+  <script>
+    (function () {
+      'use strict';
+
+      angular.module('abhyasApp', [])
+        .controller('ReportController', ReportController);
+
+      ReportController.$inject = ['$http', '$q', '$scope', '$timeout'];
+
+      function ReportController($http, $q, $scope, $timeout) {
+        var vm = this;
+
+        // API Endpoint definitions
+        var ENDPOINTS = {
+          crtPractice: 'http://10.70.9.231:4001/admin/vgreport/elearning/practicetest',
+          crtGrand: 'http://10.70.9.231:4001/admin/vgreport/elearning/grandtest',
+          crtDeepdive: 'http://10.70.9.231:4001/admin/vgreport/elearning/deepdive',
+          vaniReport: 'http://10.70.9.231:6012/lsrw_report/vgreport',
+          vaniWriting: 'http://10.70.9.231:6012/studentresult/vgreport',
+          labPractice: 'http://10.70.9.195:3200/practiceresult/elearning_self',
+          labCoding: 'http://10.70.9.195:3200/exams/elearning_coding'
+        };
+
+        // Helper to get today and yesterday dates
+        function getYesterdayAndToday() {
+          var today = new Date();
+          var yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return { yesterday: yesterday, today: today };
+        }
+
+        var defaultDates = getYesterdayAndToday();
+
+        // Form query model (default: yesterday to today, SUC empty)
+        vm.query = {
+          suc: '',
+          fromDate: defaultDates.yesterday,
+          toDate: defaultDates.today
+        };
+
+        // State control
+        vm.hasSearched = false;
+        vm.isLoading = false;
+        vm.hasAnyData = false;
+        vm.activeTab = 'crt'; // 'crt', 'lab', 'vani'
+        vm.completedRequests = 0;
+        vm.totalRequests = 7;
+
+        // API Status Tracker
+        vm.apiStatuses = [
+          { key: 'crtPractice', name: 'CRT Practice', state: 'pending' },
+          { key: 'crtGrand', name: 'CRT Grand Test', state: 'pending' },
+          { key: 'crtDeepdive', name: 'CRT Deepdive', state: 'pending' },
+          { key: 'vaniReport', name: 'Vani LSR', state: 'pending' },
+          { key: 'vaniWriting', name: 'Vani Writing', state: 'pending' },
+          { key: 'labPractice', name: 'Lab Self-Practice', state: 'pending' },
+          { key: 'labCoding', name: 'Lab Challenges', state: 'pending' }
+        ];
+
+        // Result containers
+        vm.crtPractice = { state: 'idle', data: [] };
+        vm.crtGrand = { state: 'idle', data: [] };
+        vm.crtDeepdive = { state: 'idle', data: [] };
+        vm.vaniReport = { state: 'idle', data: [] };
+        vm.vaniWriting = { state: 'idle', data: [] };
+        vm.labPractice = { state: 'idle', data: [] };
+        vm.labCoding = { state: 'idle', data: [] };
+
+        vm.crtTotalCount = 0;
+        vm.labTotalCount = 0;
+        vm.vaniTotalCount = 0;
+        vm.vaniSkills = [];
+        vm.studentSummary = { name: '', campus: '', section: '' };
+        vm.totalAggregateQuestions = 0;
+        vm.totalAggregateRight = 0;
+        vm.totalAggregateAccuracy = 0;
+
+        // Helper formatting functions
+        function formatDateToYMD(dateObj) {
+          if (!dateObj) return '';
+          if (typeof dateObj === 'string') return dateObj;
+          var year = dateObj.getFullYear();
+          var month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+          var day = ('0' + dateObj.getDate()).slice(-2);
+          return year + '-' + month + '-' + day;
+        }
+
+        vm.setDatePreset = function (preset) {
+          var now = new Date();
+          if (preset === 'yesterdayToday') {
+            var yd = getYesterdayAndToday();
+            vm.query.fromDate = yd.yesterday;
+            vm.query.toDate = yd.today;
+          } else if (preset === 'academic') {
+            vm.query.fromDate = new Date(2025, 0, 1);
+            vm.query.toDate = new Date(2026, 11, 31);
+          } else if (preset === 'thisMonth') {
+            vm.query.fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            vm.query.toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          } else if (preset === 'last30') {
+            var past = new Date();
+            past.setDate(past.getDate() - 30);
+            vm.query.fromDate = past;
+            vm.query.toDate = now;
+          }
+        };
+
+        vm.resetFilters = function () {
+          var yd = getYesterdayAndToday();
+          vm.query.suc = '';
+          vm.query.fromDate = yd.yesterday;
+          vm.query.toDate = yd.today;
+          vm.hasSearched = false;
+          vm.hasAnyData = false;
+        };
+
+        vm.formatTimeToHMS = function (item) {
+          if (!item) return '00:00:00';
+          if (item.timeSeconds !== undefined && item.timeSeconds !== null) {
+            var totalSec = Number(item.timeSeconds);
+            if (isNaN(totalSec) || totalSec <= 0) {
+              if (item.time && String(item.time).trim() !== '') {
+                return String(item.time);
+              }
+              return '00:00:00';
+            }
+            var h = Math.floor(totalSec / 3600);
+            var m = Math.floor((totalSec % 3600) / 60);
+            var s = totalSec % 60;
+            return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2);
+          }
+          if (item.time) {
+            var str = String(item.time).trim();
+            var parts = str.split(':');
+            if (parts.length === 3) {
+              return ('0' + Number(parts[0])).slice(-2) + ':' +
+                ('0' + Number(parts[1])).slice(-2) + ':' +
+                ('0' + Number(parts[2])).slice(-2);
+            } else if (parts.length === 2) {
+              return '00:' + ('0' + Number(parts[0])).slice(-2) + ':' + ('0' + Number(parts[1])).slice(-2);
+            }
+            return str;
+          }
+          return '00:00:00';
+        };
+        vm.formatToMinutes = vm.formatTimeToHMS;
+
+        vm.printReport = function () {
+          window.print();
+        };
+
+        // Styling helpers
+        vm.getStatusClass = function (module) {
+          if (module.state === 'loading') return 'loading';
+          if (module.state === 'error') return 'error';
+          if (module.data && module.data.length > 0) return 'success';
+          return 'empty';
+        };
+
+        vm.getStatusLabel = function (module) {
+          if (module.state === 'loading') return 'Fetching...';
+          if (module.state === 'error') return 'Error / Offline';
+          if (module.data && module.data.length > 0) return module.data.length + ' Record(s)';
+          return '0 Records';
+        };
+
+        vm.getVaniStatusClass = function () {
+          if (vm.vaniReport.state === 'loading' || vm.vaniWriting.state === 'loading') return 'loading';
+          if (vm.vaniTotalCount > 0) return 'success';
+          if (vm.vaniReport.state === 'error' && vm.vaniWriting.state === 'error') return 'error';
+          return 'empty';
+        };
+
+        vm.getScoreColor = function (score) {
+          var s = Number(score) || 0;
+          if (s >= 75) return 'text-success';
+          if (s >= 40) return 'text-warning';
+          return 'text-danger';
+        };
+
+        vm.getProgressColor = function (score) {
+          var s = Number(score) || 0;
+          if (s >= 75) return '#10b981';
+          if (s >= 40) return '#f59e0b';
+          return '#ef4444';
+        };
+
+        vm.getAccuracyBadgeClass = function (accuracy) {
+          var a = Number(accuracy) || 0;
+          if (a >= 75) return 'badge-percent-high';
+          if (a >= 40) return 'badge-percent-mid';
+          return 'badge-percent-low';
+        };
+
+        vm.getScoreBadgeClass = function (score) {
+          var s = Number(score) || 0;
+          if (s >= 75) return 'badge-percent-high';
+          if (s >= 40) return 'badge-percent-mid';
+          return 'badge-percent-low';
+        };
+
+        // Core Submit logic
+        vm.submitQuery = function () {
+          var cleanSuc = (vm.query.suc || '').trim();
+          if (!cleanSuc) {
+            alert('Please enter a valid Student SUC.');
+            return;
+          }
+          if (!vm.query.fromDate || !vm.query.toDate) {
+            alert('Please select both From Date and To Date.');
+            return;
+          }
+
+          var formattedFrom = formatDateToYMD(vm.query.fromDate);
+          var formattedTo = formatDateToYMD(vm.query.toDate);
+
+          vm.formattedFromDate = formattedFrom;
+          vm.formattedToDate = formattedTo;
+
+          // CRT and Lab payload (keys: from_date, to_date, suc)
+          var standardPayload = {
+            from_date: formattedFrom,
+            to_date: formattedTo,
+            suc: cleanSuc
+          };
+
+          // Vani payload (keys: fromdate, todate, suc)
+          var vaniPayload = {
+            fromdate: formattedFrom,
+            todate: formattedTo,
+            suc: cleanSuc
+          };
+
+          // Reset UI states
+          vm.isLoading = true;
+          vm.hasSearched = true;
+          vm.hasAnyData = false;
+          vm.completedRequests = 0;
+          vm.totalRequests = 7;
+          vm.studentSummary = { name: '', campus: '', section: '' };
+
+          // Reset containers
+          var modules = ['crtPractice', 'crtGrand', 'crtDeepdive', 'vaniReport', 'vaniWriting', 'labPractice', 'labCoding'];
+          modules.forEach(function (mod) {
+            vm[mod].state = 'loading';
+            vm[mod].data = [];
+          });
+
+          vm.apiStatuses.forEach(function (s) { s.state = 'loading'; });
+
+          // Call wrapper
+          function callApi(key, url, payload, targetObj) {
+            var statusItem = vm.apiStatuses.find(function (s) { return s.key === key; });
+
+            return $http.post(url, payload, { timeout: 15000 })
+              .then(function (response) {
+                targetObj.state = 'done';
+                var resList = (response.data && response.data.result) ? response.data.result : [];
+                targetObj.data = Array.isArray(resList) ? resList : [resList];
+                if (statusItem) statusItem.state = 'done';
+
+                // Extract student metadata and normalize data
+                targetObj.data.forEach(function (r) {
+                  if (r) {
+                    if (!vm.studentSummary.name && (r.name || r.student)) {
+                      vm.studentSummary.name = r.name || r.student;
+                    }
+                    if (!vm.studentSummary.campus && r.campus) {
+                      vm.studentSummary.campus = r.campus;
+                    }
+                    if (!vm.studentSummary.section && r.section) {
+                      vm.studentSummary.section = r.section;
+                    }
+
+                    // Lab normalization: ensure percent is populated
+                    if (r.percent === undefined || r.percent === null) {
+                      if (r.overallpercentage !== undefined) {
+                        r.percent = r.overallpercentage;
+                      } else if (r.rightpercentage !== undefined) {
+                        r.percent = r.rightpercentage;
+                      }
+                    }
+
+                    // CRT Grand normalization: ensure timeSeconds is non-negative
+                    if (r.timeSeconds !== undefined && Number(r.timeSeconds) < 0) {
+                      r.timeSeconds = 0;
+                    }
+                  }
+                });
+              })
+              .catch(function (err) {
+                targetObj.state = 'error';
+                targetObj.data = [];
+                if (statusItem) statusItem.state = 'error';
+              })
+              .finally(function () {
+                vm.completedRequests++;
+              });
+          }
+
+          // Execute all 7 requests concurrently
+          var p1 = callApi('crtPractice', ENDPOINTS.crtPractice, standardPayload, vm.crtPractice);
+          var p2 = callApi('crtGrand', ENDPOINTS.crtGrand, standardPayload, vm.crtGrand);
+          var p3 = callApi('crtDeepdive', ENDPOINTS.crtDeepdive, standardPayload, vm.crtDeepdive);
+          var p4 = callApi('vaniReport', ENDPOINTS.vaniReport, vaniPayload, vm.vaniReport);
+          var p5 = callApi('vaniWriting', ENDPOINTS.vaniWriting, vaniPayload, vm.vaniWriting);
+          var p6 = callApi('labPractice', ENDPOINTS.labPractice, standardPayload, vm.labPractice);
+          var p7 = callApi('labCoding', ENDPOINTS.labCoding, standardPayload, vm.labCoding);
+
+          $q.all([p1, p2, p3, p4, p5, p6, p7]).then(function () {
+            vm.isLoading = false;
+            postProcessResults();
+          });
+        };
+
+        // Post-processing and aggregate calculations
+        function postProcessResults() {
+          // Process Vani Skills in strict order: Listening -> Reading -> Speaking
+          var lsrOrder = { 'listening': 1, 'reading': 2, 'speaking': 3 };
+          vm.vaniSkills = [];
+          if (vm.vaniReport.data && vm.vaniReport.data.length > 0) {
+            vm.vaniSkills = vm.vaniReport.data.slice().sort(function (a, b) {
+              var sA = (a.skill || '').trim().toLowerCase();
+              var sB = (b.skill || '').trim().toLowerCase();
+              return (lsrOrder[sA] || 99) - (lsrOrder[sB] || 99);
+            });
+          }
+
+          var vaniWritingCount = (vm.vaniWriting.data && vm.vaniWriting.data.length > 0) ? vm.vaniWriting.data.length : 0;
+          vm.vaniTotalCount = vm.vaniSkills.length + vaniWritingCount;
+
+          // Total counts for modules
+          vm.crtTotalCount = (vm.crtPractice.data ? vm.crtPractice.data.length : 0) +
+            (vm.crtGrand.data ? vm.crtGrand.data.length : 0) +
+            (vm.crtDeepdive.data ? vm.crtDeepdive.data.length : 0);
+
+          vm.labTotalCount = (vm.labPractice.data ? vm.labPractice.data.length : 0) +
+            (vm.labCoding.data ? vm.labCoding.data.length : 0);
+
+          // Check if any module returned data
+          vm.hasAnyData = (vm.crtTotalCount > 0) || (vm.labTotalCount > 0) || (vm.vaniTotalCount > 0);
+
+          // Auto-select tab that has data
+          if (vm.crtTotalCount > 0) {
+            vm.activeTab = 'crt';
+          } else if (vm.labTotalCount > 0) {
+            vm.activeTab = 'lab';
+          } else if (vm.vaniTotalCount > 0) {
+            vm.activeTab = 'vani';
+          } else {
+            vm.activeTab = 'crt';
+          }
+
+          // Calculate overall aggregates
+          var totalQ = 0;
+          var totalR = 0;
+
+          // CRT Practice
+          if (vm.crtPractice.data) {
+            vm.crtPractice.data.forEach(function (d) {
+              totalQ += Number(d.Q) || 0;
+              totalR += Number(d.R) || 0;
+            });
+          }
+          // CRT Grand
+          if (vm.crtGrand.data) {
+            vm.crtGrand.data.forEach(function (d) {
+              totalQ += Number(d.Q) || 0;
+              totalR += Number(d.R) || 0;
+            });
+          }
+          // CRT Deepdive
+          if (vm.crtDeepdive.data) {
+            vm.crtDeepdive.data.forEach(function (d) {
+              totalQ += Number(d.Q) || 0;
+              totalR += Number(d.R) || 0;
+            });
+          }
+          // Vani Skills
+          if (vm.vaniSkills) {
+            vm.vaniSkills.forEach(function (d) {
+              totalQ += Number(d.totalques) || 0;
+              totalR += Number(d.totalright) || 0;
+            });
+          }
+          // Lab Practice
+          if (vm.labPractice.data) {
+            vm.labPractice.data.forEach(function (d) {
+              totalQ += Number(d.Q) || 0;
+              totalR += Number(d.R) || 0;
+            });
+          }
+          // Lab Coding
+          if (vm.labCoding.data) {
+            vm.labCoding.data.forEach(function (d) {
+              totalQ += Number(d.Q) || 0;
+              totalR += Number(d.R) || 0;
+            });
+          }
+
+          vm.totalAggregateQuestions = totalQ;
+          vm.totalAggregateRight = totalR;
+          vm.totalAggregateAccuracy = totalQ > 0 ? ((totalR / totalQ) * 100).toFixed(1) : 0;
+        }
+
+      }
+    })();
+  </script>
+</body>
+
+</html>
